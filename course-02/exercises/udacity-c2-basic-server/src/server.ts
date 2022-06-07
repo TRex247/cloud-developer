@@ -13,7 +13,7 @@ import { Car, cars as cars_list } from './cars';
   
   //use middleware so post bodies 
   //are accessable as req.body.{{variable}}
-  app.use(bodyParser.json()); 
+  app.use(express.json()); 
 
   // Root URI call
   app.get( "/", ( req: Request, res: Response ) => {
@@ -70,14 +70,63 @@ import { Car, cars as cars_list } from './cars';
 
   // @TODO Add an endpoint to GET a list of cars
   // it should be filterable by make with a query paramater
+  app.get( "/cars/", ( req: Request, res: Response ) => {
+    let { make } = req.query;
 
+    let carsList = cars;
+
+    if(make) {
+      carsList = cars.filter((car) => car.make === make);
+    }
+
+    return res.status(200).send(carsList);
+  } );
   // @TODO Add an endpoint to get a specific car
   // it should require id
   // it should fail gracefully if no matching car is found
+  app.get( "/cars/:id", ( req: Request, res: Response ) => {
+    let { id } = req.params;
+
+    if(!id) {
+      return res.status(400).send(`id is required`);
+    }
+
+    // get car by id
+    const car = cars.filter(car => car.id.toString() == id);
+
+    // return 404 if car is not found
+    if(car && car.length === 0) {
+      return res.status(404).send(`car not found`);
+    }
+
+    // return the car with success
+    return res.status(200).send(car);
+  } );
 
   /// @TODO Add an endpoint to post a new car to our list
   // it should require id, type, model, and cost
+  app.post( "/cars", 
+    async ( req: Request, res: Response ) => {
 
+      const { make, type, model, cost, id } = req.body;
+
+      // validate variables
+      if(!id || !make || !type || !model || !cost) {
+        return res.status(400).send(`make, type, model, cost, id are required.`);
+      }
+
+      // create new car instance
+      const newCar : Car = {
+        make: make, type: type, model: model, cost: cost, id: id
+      };
+
+      // add car to local car list
+      cars_list.push(newCar);
+
+      // return creation success with new car
+      return res.status(201).send(newCar);
+      
+  } );
   // Start the Server
   app.listen( port, () => {
       console.log( `server running http://localhost:${ port }` );
