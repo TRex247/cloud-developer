@@ -47,7 +47,7 @@ import { Car, cars as cars_list } from './cars';
     }
 
     return res.status(200)
-              .send(`Welcome to the Cloud, ${name}!`);
+              .send(`Welcome to the Cloud, ${name}!!`);
   } );
 
   // Post a greeting to a specific person
