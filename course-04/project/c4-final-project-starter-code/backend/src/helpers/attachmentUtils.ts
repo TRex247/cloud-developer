@@ -11,7 +11,7 @@ const logger = createLogger('AttachmentUtils')
 export class AttachmentUtils {
     constructor(
         private readonly s3Client: Types = new XAWS.S3({ signatureVersion: 'v4' }),
-        private readonly s3BucketName = process.env.S3_BUCKET_NAME,
+        private readonly s3BucketName = process.env.ATTACHMENT_S3_BUCKET,
         private readonly signedUrlExp = process.env.SIGNED_URL_EXPIRATION) {
     }
 
@@ -21,7 +21,7 @@ export class AttachmentUtils {
         const url = this.s3Client.getSignedUrl('putObject', {
             Bucket: this.s3BucketName,
             Key: todoId,
-            Expires: this.signedUrlExp,
+            Expires: parseInt(this.signedUrlExp),
         });
         logger.info("URL generated", url);
 
