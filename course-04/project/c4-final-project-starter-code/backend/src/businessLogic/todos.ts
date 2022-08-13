@@ -1,5 +1,5 @@
-import { TodosAccess } from './todosAcess';
-import { AttachmentUtils } from './attachmentUtils';
+import { TodosAccess } from '../dataAccessLayer/todosAcess';
+import { AttachmentUtils } from '../helpers/attachmentUtils';
 import { TodoItem } from '../models/TodoItem';
 import { TodoUpdate } from '../models/TodoUpdate';
 import { CreateTodoRequest } from '../requests/CreateTodoRequest';
@@ -19,12 +19,12 @@ export async function getTodosForUser(userId: string): Promise<TodoItem[]> {
 
 export function createTodo(createTodoRequest: CreateTodoRequest, userId: string): Promise<TodoItem> {
     const todoId =  uuidv4();
-    const s3BucketName = process.env.ATTACHMENT_S3_BUCKET;
+    //const s3BucketName = process.env.ATTACHMENT_S3_BUCKET;
     
     return toDoAccess.createTodo({
         userId: userId,
         todoId: todoId,
-        attachmentUrl:  `https://${s3BucketName}.s3.amazonaws.com/${todoId}`, 
+        //attachmentUrl:  `https://${s3BucketName}.s3.amazonaws.com/${todoId}`, 
         createdAt: new Date().getTime().toString(),
         done: false,
         ...createTodoRequest,
@@ -39,6 +39,6 @@ export function deleteTodo(todoId: string, userId: string): Promise<string> {
     return toDoAccess.deleteTodo(todoId, userId);
 }
 
-export function createAttachmentPresignedUrl(todoId: string): Promise<string> {
-    return attachmentUtils.generateUploadUrl(todoId);
+export function createAttachmentPresignedUrl(todoId: string, userId: string): Promise<string> {
+    return attachmentUtils.generateUploadUrl(todoId, userId);
 }
